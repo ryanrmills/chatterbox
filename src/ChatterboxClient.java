@@ -188,16 +188,15 @@ public class ChatterboxClient {
         // if I want to connect, I need to be able to send messages and accepting
         // incoming
         try (
-                Socket socket = new Socket(host, port);
-                ServerSocket server = new ServerSocket()) {
+                Socket socket = new Socket(host, port)
+            ) {
             InputStream inputStream = socket.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream,
                     java.nio.charset.StandardCharsets.UTF_8);
             // BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             serverReader = new BufferedReader(inputStreamReader);
 
-            Socket serverSocket = server.accept();
-            OutputStream outputStream = serverSocket.getOutputStream();
+            OutputStream outputStream = socket.getOutputStream();
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream,
                     java.nio.charset.StandardCharsets.UTF_8);
             serverWriter = new BufferedWriter(outputStreamWriter);
@@ -233,11 +232,12 @@ public class ChatterboxClient {
      * @throws IllegalArgumentException for bad credentials / server rejection
      */
     public void authenticate() throws IOException, IllegalArgumentException {
-        throw new UnsupportedOperationException(
-                "Authenticate not yet implemented. Implement authenticate() and remove this exception!");
+        // throw new UnsupportedOperationException(
+                //"Authenticate not yet implemented. Implement authenticate() and remove this exception!");
         // Hint: use the username/password instance variables, DO NOT READ FROM
         // userInput
         // send messages using serverWriter (don't forget to flush!)
+        serverWriter.write(username + " " + password + "\n");
     }
 
     /**
