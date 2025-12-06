@@ -258,7 +258,12 @@ public class ChatterboxClient {
      * @throws IOException
      */
     public void streamChat() throws IOException {
-        printIncomingChats();
+        // printIncomingChats();
+        Thread printThread = new Thread(() -> printIncomingChats());
+        Thread sendChatThread = new Thread(() -> sendOutgoingChats());
+
+        printThread.start();
+        sendChatThread.start();
         // throw new UnsupportedOperationException(
         // "Chat streaming not yet implemented. Implement streamChat() and remove this
         // exception!");
@@ -329,6 +334,23 @@ public class ChatterboxClient {
         // Use the userInput to read, NOT System.in directly
         // loop forever reading user input
         // write to serverOutput
+        //BufferedWriter userResponse = new BufferedWriter(new OutputStreamWriter(userOutput, StandardCharsets.UTF_8));
+        while (userInput.hasNextLine()){
+            try {
+                String clientUserInput = userInput.nextLine();
+                if (clientUserInput.trim().length() > 0){
+                    serverWriter.write(clientUserInput);
+                    serverWriter.newLine();
+                    serverWriter.flush();
+                }
+            } catch (IOException e){
+                // BufferedWriter exceptionOutput = new BufferedWriter(new OutputStreamWriter(userOutput, StandardCharsets.UTF_8));
+                // exceptionOutput.write("error occurred with outgoing chat.");
+                try {
+                    userOutput.write(("Error with outgoing chat process.").getBytes());
+                } catch (IOException ignored){}
+            }
+        }
     }
 
     public String getHost() {
