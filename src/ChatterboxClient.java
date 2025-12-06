@@ -234,10 +234,14 @@ public class ChatterboxClient {
         // Hint: use the username/password instance variables, DO NOT READ FROM
         // userInput
         // send messages using serverWriter (don't forget to flush!)
-        
-        userOutput.write(serverReader.readLine().getBytes());
-        serverWriter.write(username + " " + password + "\n");
-        serverWriter.flush();
+        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(userOutput, StandardCharsets.UTF_8));
+        String response = serverReader.readLine();
+        if (response != null) {
+            output.write(response);
+            serverWriter.write(username + " " + password);
+            serverWriter.newLine();
+            serverWriter.flush();
+        }
     }
 
     /**
@@ -277,21 +281,35 @@ public class ChatterboxClient {
     public void printIncomingChats() {
         // Listen on serverReader
         // Write to userOutput, NOT System.out
+        // try {
+        //     String line;
+        //     while ((line = serverReader.readLine()) != null) {
+        //         userOutput.write((line + "\n").getBytes());
+        //         userOutput.flush();
+        //     }
+        //     userOutput.write(("disconnected").getBytes());
+        //     userOutput.flush();
+
+        // } catch (IOException e) {
+        //     try {
+        //         userOutput.write(("disconnected in try/catch").getBytes());
+        //     } catch (IOException ignored) {
+
+        //     }
+        // }
+        BufferedWriter output = new BufferedWriter(new OutputStreamWriter(userOutput, StandardCharsets.UTF_8));
+        String response;
         try {
-            String line;
-            while ((line = serverReader.readLine()) != null) {
-                userOutput.write((line + "\n").getBytes());
-                userOutput.flush();
-            }
-            userOutput.write(("disconnected").getBytes());
-            userOutput.flush();
+            while ((response = serverReader.readLine()) != null){
+                output.write(response);
+                output.newLine();
+                output.flush();
+            };
 
-        } catch (IOException e) {
+        } catch (IOException e){
             try {
-                userOutput.write(("disconnected in try/catch").getBytes());
-            } catch (IOException ignored) {
-
-            }
+                output.write("You have been disconnected.");
+            } catch (IOException ignored){}
         }
     }
 
